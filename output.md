@@ -15,7 +15,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|:---|
 | ge |  | ✓ | ma | ✓ |  | ma_observable |
 | gf |  | ✓ | ma |  |  | ma_unobservable |
-| gs | ✓ |  | — | ✓ |  | abs_observable |
+| gs | ✓ |  | viol | ✓ |  | modelling_contradiction |
 
 ### Revisions possible (3 elements of Rev)
 
@@ -33,8 +33,8 @@
 | real utility (B_env) | 0 |
 | expectations absolve, results no | True |
 | excusable | {gf} |
-| revision required | {ge, gs} |
-| culpable if kept | {gs} |
-| modelling contradiction | ∅ |
+| revision required | {ge} |
+| culpable if kept | ∅ |
+| modelling contradiction | {gs} |
 | silent failure | False |
 

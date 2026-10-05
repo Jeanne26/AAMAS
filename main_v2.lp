@@ -110,31 +110,32 @@ obs(pos,heli_here).
 
 %Absence witnesses
 unobsbody(R) :- body(R,X), not act(X), not obs(pos,X).
+obs_cond(S,G) :- missed(S,G),  not wviol(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
+wviol_det(S,G) :- wviol(S,G), obs_cond(S,G).
+missed_det(S,G) :- not wviol(S,G), obs_cond(S,G).
 
-wviol_det(S,G) :- wviol(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
+case(S,G,viol_observable) :- wwiol_det(S,G).
+case(S,G,opportunity_noticed) :- missed_det(S,G).
+case(S,G,opportunity_missed)     :- missed(S,G), not wviol(S,G), not missed_det(S,G).
+case(S,G,modelling_contradiction):- wviol(S,G), not wviol_det(S,G).
 
-missed_det(S,G) :- missed(S,G), not wviol(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
 
 %Mistaken anticipation witness
-neg_obs(S,R) :- body(R,X), obs(neg,X), not act(X), step(S),
-                not satisfaction(S,env,X).
+%check if it can be detected
+neg_obs(S,R) :- body(R,X), obs(neg,X), not act(X), step(S), not satisfaction(S,env,X).
+%detection
 bad(S,G)     :- incorrect(S,G), dhead(R,G), not fails(S,ag,R), not neg_obs(S,R).
+
 wma_det(S,G) :- wma(S,G), not bad(S,G).
 
+case(S,G,ma_observable)          :- wma_det(S,G).
+case(S,G,ma_unobservable)        :- wma(S,G), bad(S,G).
+case(S,G,silent_misprediction)   :- incorrect(S,G), not wma(S,G), bad(S,G).
+case(S,G,prediction_falsified)   :- incorrect(S,G), not wma(S,G), not bad(S,G).
 
 wdet(S,G) :- wviol_det(S,G).
 wdet(S,G) :- wma_det(S,G).
 
-% case Sec. 5.2
-case(S,G,viol_observable)         :- wwiol_det(S,G).
-case(S,G,opportunity_noticed)    :- missed_det(S,G).
-case(S,G,opportunity_missed)     :- missed(S,G), not wviol(S,G), not missed_det(S,G).
-case(S,G,modelling_contradiction):- wviol(S,G), not wviol_det(S,G).
-
-case(S,G,ma_observable)          :- wma_det(S,G).
-case(S,G,ma_unobservable)        :- wma(S,G), bad(S,G).
-case(S,G,prediction_falsified)   :- incorrect(S,G), not wma(S,G), not bad(S,G).
-case(S,G,silent_misprediction)   :- incorrect(S,G), not wma(S,G), bad(S,G).
 
 %local adequation test
 silent_failure(S) :- contradicted(S), not wdet(S,_), step(S).
@@ -144,17 +145,22 @@ silent_failure(S) :- contradicted(S), not wdet(S,_), step(S).
 tracked(X) :- act(X).
 tracked(X) :- event(X).
 
+%initial less than relationships
+%relation on delta
 lt0(X,E) :- chead(R,E), body(R,X), tracked(X).
+%relation on pi
 lt0(X,A) :- dhead(R,G), body(R,X), tracked(X), offers(G,A).
 
 eqv(X,Y) :- offers(G,X), offers(G,Y).
 eqv(X,Z) :- eqv(X,Y), eqv(Y,Z).
 
+%combined order
 lt(X,Y) :- lt0(X,Y).
 lt(X,Z) :- lt(X,Y), lt(Y,Z).
 lt(X,Z) :- lt(X,Y), eqv(Y,Z).
 lt(Z,Y) :- lt(X,Y), eqv(X,Z).
 
+%temporal coherence
 incoherent :- lt(X,X).
 :- incoherent.
 
@@ -166,31 +172,32 @@ cause(S,neg,E) :- holds(S,ag,E), not holds(S,env,E), obs(neg,E).
 dominated(S,K,E) :- cause(S,K,E), cause(S,_,E2), lt(E2,E).
 alert(S,K,E)     :- cause(S,K,E), not dominated(S,K,E).
 
-pres(S,A) :- alert(S,_,E), lt(A,E), act(A).
+preserved(S,A) :- alert(S,_,E), lt(A,E), act(A).
 
 
-% REVISION (Def. 6.10 -- 6.13)
-% Sans alerte : pas de révision (B^1 = B^0, D^1 = D^0).
-% Avec alerte : (B^1, D^1) devinés, un answer set = un élément de Rev.
+% REVISION
 rev(S) :- rstep(S,_), alert(S,_,_).
 
+%without alert 
 believe(T,ag,K)  :- rstep(S,T), believe(S,ag,K), not rev(S).
 decision(T,A)    :- rstep(S,T), decision(S,A),   not rev(S).
 
+
+%with alert
 { believe(T,ag,K) : context(K) } :- rstep(S,T), rev(S).
 { decision(T,A)   : act(A)     } :- rstep(S,T), rev(S).
 
-% critère (a) : la révision rend compte des alertes côté agent
+% criterion (a)
 :- rstep(S,T), alert(S,pos,E), not holds(T,ag,E).
 :- rstep(S,T), alert(S,neg,E),     holds(T,ag,E).
 
-% critère (b) : préservation du passé
-:- rstep(S,T), pres(S,A), decision(S,A), not decision(T,A).
-:- rstep(S,T), pres(S,A), decision(T,A), not decision(S,A).
+% criterion (b) 
+:- rstep(S,T), preserved(S,A), decision(S,A), not decision(T,A).
+:- rstep(S,T), preserved(S,A), decision(T,A), not decision(S,A).
 
-% admissibilité relative à P^S (Def. 6.12)
-notsub(S,G) :- rstep(S,_), choice(G), offers(G,A), not pres(S,A).
-rviol(T,coverage(A)) :- rstep(S,T), decision(T,A), not pres(S,A), not offered(T,ag,A).
+% admissibility relative to the past
+notsub(S,G) :- rstep(S,_), choice(G), offers(G,A), not preserved(S,A).
+rviol(T,coverage(A)) :- rstep(S,T), decision(T,A), not preserved(S,A), not offered(T,ag,A).
 rviol(T,bound(G))    :- rstep(S,T), card(T,ag,G,N), cmin(G,M), N < M, notsub(S,G).
 rviol(T,bound(G))    :- rstep(S,T), card(T,ag,G,N), cmax(G,M), N > M, notsub(S,G).
 :- rviol(_,_).
@@ -223,7 +230,7 @@ modelling_contradiction(S,G) :- wviol(S,G), not wviol_det(S,G).
 #show holds/3.
 #show cause/3.
 #show alert/3.
-#show pres/2.
+#show preserved/2.
 #show believe/3.
 #show decision/2.
 #show totalUti/3.

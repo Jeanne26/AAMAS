@@ -75,7 +75,7 @@ def table_diagnosis(facts, step=0):
            f"{fmt(['¬' + str(a[2]) for a in get(facts, 'cause') if a[0] == step and a[1] == 'neg'])} (−)\n")
     md += (f"- alert = "
            f"{fmt([a[2] if a[1] == 'pos' else '¬' + str(a[2]) for a in get(facts, 'alert') if a[0] == step])}"
-           f" ; past to preserve P = {fmt([a[1] for a in get(facts, 'pres') if a[0] == step])}\n\n")
+           f" ; past to preserve P = {fmt([a[1] for a in get(facts, 'preserved') if a[0] == step])}\n\n")
 
     md += "| Choices | Missed | Incorrect | Witness | Forced | Capped | Case (Sec. 5.2) |\n"
     md += "|:---:|:---:|:---:|:---:|:---:|:---:|:---|\n"
