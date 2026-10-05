@@ -12,8 +12,6 @@ SCENARIOS = {"rescue": ["main_v2.lp"]}
 def solve(files):
     """Returns the list of answer sets (each: a set of (pred, args))."""
     program = "\n".join(open(f).read() for f in files)
-    with open("combined_program.lp", "w") as f:
-        f.write(program)
     return [set(a) for a in ASP(program)]
 
 
@@ -86,7 +84,7 @@ def table_diagnosis(facts, step=0):
     for g in choices:
         miss = flag(facts, "missed", step, g)
         inc = flag(facts, "incorrect", step, g)
-        wit = "abs" if flag(facts, "wabs", step, g) else ("ma" if flag(facts, "wma", step, g) else "—")
+        wit = "viol" if flag(facts, "wviol", step, g) else ("ma" if flag(facts, "wma", step, g) else "—")
         cases = [a[2] for a in get(facts, "case") if a[0] == step and a[1] == g]
         md += (f"| {g} | {'✓' if miss else ''} | {'✓' if inc else ''} | {wit} "
                f"| {'✓' if flag(facts, 'forced', g) else ''} "
@@ -121,10 +119,6 @@ def table_evaluation(facts, step=0):
     md += f"| silent failure | {flag(facts, 'silent_failure', step)} |\n"
     return md
 
-
-# ---------------------------------------------------------------------
-# 4. Exécution
-# ---------------------------------------------------------------------
 out = ""
 for name, files in SCENARIOS.items():
     answer_sets = solve(files)

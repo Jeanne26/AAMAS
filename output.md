@@ -15,7 +15,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|:---|
 | ge |  | ✓ | ma | ✓ |  | ma_observable |
 | gf |  | ✓ | ma |  |  | ma_unobservable |
-| gs | ✓ |  | abs | ✓ |  | abs_observable |
+| gs | ✓ |  | — | ✓ |  | abs_observable |
 
 ### Revisions possible (3 elements of Rev)
 

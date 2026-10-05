@@ -85,12 +85,12 @@ contradicted(S) :- adm(S,ag), inadm(S,env).
 missed(S,G)    :- trig(S,env,G), not trig(S,ag,G), step(S).
 incorrect(S,G) :- trig(S,ag,G),  not trig(S,env,G), step(S).
 
-wabs(S,G) :- missed(S,G), card(S,env,G,N), cmin(G,M), N < M.
-wabs(S,G) :- missed(S,G), card(S,env,G,N), cmax(G,M), N > M.
+wviol(S,G) :- missed(S,G), card(S,env,G,N), cmin(G,M), N < M.
+wviol(S,G) :- missed(S,G), card(S,env,G,N), cmax(G,M), N > M.
 
 wma(S,G) :- incorrect(S,G), offers(G,A), decision(S,A), not offered(S,env,A).
 
-witness(S,G) :- wabs(S,G).
+witness(S,G) :- wviol(S,G).
 witness(S,G) :- wma(S,G).
 
 forced(G) :- cmin(G,M), M > 0.
@@ -108,36 +108,39 @@ obs(pos,heli_here).
 :- obs(pos,K), context(K), believe(S,ag,K), not believe(S,env,K).
 :- obs(pos,K), context(K), not believe(S,ag,K), believe(S,env,K).
 
-
+%Absence witnesses
 unobsbody(R) :- body(R,X), not act(X), not obs(pos,X).
-wabs_det(S,G) :- wabs(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
 
+wviol_det(S,G) :- wviol(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
+
+missed_det(S,G) :- missed(S,G), not wviol(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
+
+%Mistaken anticipation witness
 neg_obs(S,R) :- body(R,X), obs(neg,X), not act(X), step(S),
                 not satisfaction(S,env,X).
 bad(S,G)     :- incorrect(S,G), dhead(R,G), not fails(S,ag,R), not neg_obs(S,R).
 wma_det(S,G) :- wma(S,G), not bad(S,G).
 
-missed_det(S,G) :- missed(S,G), not wabs(S,G), dhead(R,G),
-                   not fails(S,env,R), not unobsbody(R).
 
-wdet(S,G) :- wabs_det(S,G).
+wdet(S,G) :- wviol_det(S,G).
 wdet(S,G) :- wma_det(S,G).
 
-% Les 8 cas de la Sec. 5.2
-case(S,G,abs_observable)         :- wabs_det(S,G).
-case(S,G,modelling_contradiction):- wabs(S,G), not wabs_det(S,G).
+% case Sec. 5.2
+case(S,G,viol_observable)         :- wwiol_det(S,G).
+case(S,G,opportunity_noticed)    :- missed_det(S,G).
+case(S,G,opportunity_missed)     :- missed(S,G), not wviol(S,G), not missed_det(S,G).
+case(S,G,modelling_contradiction):- wviol(S,G), not wviol_det(S,G).
+
 case(S,G,ma_observable)          :- wma_det(S,G).
 case(S,G,ma_unobservable)        :- wma(S,G), bad(S,G).
-case(S,G,opportunity_noticed)    :- missed(S,G), not wabs(S,G), missed_det(S,G).
-case(S,G,opportunity_missed)     :- missed(S,G), not wabs(S,G), not missed_det(S,G).
 case(S,G,prediction_falsified)   :- incorrect(S,G), not wma(S,G), not bad(S,G).
 case(S,G,silent_misprediction)   :- incorrect(S,G), not wma(S,G), bad(S,G).
 
-% Test local d'adéquation (Def. 5.2) pour la décision courante
+%local adequation test
 silent_failure(S) :- contradicted(S), not wdet(S,_), step(S).
 
 
-% TEMPORAL ORDER (Sec. 6.1)
+% TEMPORAL ORDER 
 tracked(X) :- act(X).
 tracked(X) :- event(X).
 
@@ -156,7 +159,7 @@ incoherent :- lt(X,X).
 :- incoherent.
 
 
-% ALERTS (Def. 6.8)
+% ALERTS 
 cause(S,pos,E) :- holds(S,env,E), not holds(S,ag,E), obs(pos,E).
 cause(S,neg,E) :- holds(S,ag,E), not holds(S,env,E), obs(neg,E).
 
@@ -201,10 +204,10 @@ totalUti(S,B,T) :- step(S), beliefBase(B), T = #sum{V,E : holds(S,B,E), v(E,V)}.
 
 expectations_absolve(S) :- totalUti(S,ag,Te), totalUti(S,env,Tr), Te > Tr.
 
-excusable(S,G)               :- witness(S,G), not wdet(S,G), not wabs(S,G).
+excusable(S,G)               :- witness(S,G), not wdet(S,G), not wviol(S,G).
 revision_required(S,G)       :- witness(S,G), wdet(S,G).
-culpable_if_kept(S,G)        :- wabs(S,G), wdet(S,G).
-modelling_contradiction(S,G) :- wabs(S,G), not wabs_det(S,G).
+culpable_if_kept(S,G)        :- wviol(S,G), wdet(S,G).
+modelling_contradiction(S,G) :- wviol(S,G), not wviol_det(S,G).
 
 
 #show adm/2.
@@ -213,7 +216,7 @@ modelling_contradiction(S,G) :- wabs(S,G), not wabs_det(S,G).
 #show contradicted/1.
 #show missed/2.
 #show incorrect/2.
-#show wabs/2.
+#show wviol/2.
 #show wma/2.
 #show case/3.
 #show silent_failure/1.

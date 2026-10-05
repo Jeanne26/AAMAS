@@ -101,7 +101,7 @@ forced(G) :- cmin(G,M), M > 0.
 capped(G) :- cmax(G,M), M < #count{A:offers(G,A)}.
 
 
-% OBSERVABLE FAILURE (Sec. 5)
+% OBSERVABLE FAILURE 
 
 obs(pos,siren).
 obs(pos,at_river).
