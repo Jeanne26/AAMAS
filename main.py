@@ -6,7 +6,7 @@ except ImportError:                      # exécution hors notebook
     display, Markdown = print, str
 
 
-SCENARIOS = {"rescue": ["main_v2.lp"]}
+SCENARIOS = {"rescue": ["main.lp"]}
 
 
 def solve(files):
