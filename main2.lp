@@ -1,11 +1,13 @@
+% RESCUE BOAT EXEMPLE
+
 
 % VOCABULARY
 context(mission;low_water;storm_front).
-act(hike;ford;call_heli;carry;secure_camp).
-event(at_river;across;heli_here;evacuated;siren;sheltered).
+act(hike;ford;call_heli;carry;secure_camp;use_boat).
+event(at_river;across;heli_here;evacuated;siren;sheltered;boat_here).
 
 step(0..1).
-rstep(0,1).                
+rstep(0,1).                 
 beliefBase(env;ag).
 
 
@@ -17,7 +19,8 @@ chead(c4,sheltered).   body(c4,secure_camp).
 chead(c5,across).      body(c5,ford). body(c5,low_water). body(c5,at_river).
 chead(c6,evacuated).   body(c6,carry). body(c6,across).
 chead(c7,evacuated).   body(c7,carry). body(c7,heli_here).
-
+chead(c8,boat_here). body(c8,use_boat).
+chead(c9,evacuated). body(c9,carry). body(c9,boat_here).
 
 % DECISION THEORY
 choice(gw;gh;gf;ge;gs).
@@ -30,7 +33,7 @@ dhead(d5,gs).   body(d5,siren).
 dhead(d6,gf).   body(d6,low_water). body(d6,at_river).
 
 offers(gw,hike).        cmin(gw,1). cmax(gw,1).
-offers(gh,call_heli).   cmin(gh,0). cmax(gh,1).
+offers(gh,call_heli). offers(gh,use_boat).   cmin(gh,0). cmax(gh,1).
 offers(gf,ford).        cmin(gf,0). cmax(gf,1).
 offers(ge,carry).       cmin(ge,1). cmax(ge,1).
 offers(gs,secure_camp). cmin(gs,1). cmax(gs,1).
