@@ -198,7 +198,7 @@ rviol(T,bound(G))    :- rstep(S,T), card(T,ag,G,N), cmax(G,M), N > M, notsub(S,G
 :- rviol(_,_).
 
 
-% EVALUATION (Sec. 7.3)
+% EVALUATION 
 v(evacuated,1).
 v(sheltered,1).
 

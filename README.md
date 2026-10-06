@@ -43,7 +43,7 @@ uv run main.py
 
 ## Code Structure
 
-- **`main.lp`**: ASP program: vocabulary, causal and decision theories, scenario, failure diagnosis, temporal order, alerts, revision, evaluation.
+- **`main.lp`, `main2.lp`,`main3.lp`**: ASP program: vocabulary, causal and decision theories, scenario, failure diagnosis, temporal order, alerts, revision, evaluation.
 - **`main.py`**: orchestration: solves the program with Clyngor, builds the three Markdown tables, writes `output.md`.
 - **`output.md`**: auto-generated, do not edit by hand.
 - **`pyproject.toml` / `uv.lock`**: locked dependencies managed via `uv`.

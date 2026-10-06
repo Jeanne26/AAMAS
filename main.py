@@ -2,11 +2,12 @@ from clyngor import ASP
 
 try:
     from IPython.display import display, Markdown
-except ImportError:                      # exécution hors notebook
+except ImportError:                     
     display, Markdown = print, str
 
 
-SCENARIOS = {"rescue": ["main.lp"],"rescue_boat": ["main2.lp"]}
+
+SCENARIOS = {"rescue": ["main.lp"],"rescue_boat": ["main2.lp"],"prohibited_rule": ["main3.lp"]}
 
 
 def solve(files):
@@ -125,9 +126,9 @@ for name, files in SCENARIOS.items():
     if not answer_sets:
         out += f"## {name}\n\nUNSAT (inconsistent theories or D⁰ not admissible for the agent)\n\n"
         continue
-    first = answer_sets[0]       # l'étape 0 est identique dans tous les answer sets
+    first = answer_sets[0]       
     out += f"## Scenario {name}\n\n### Diagnostic and detection\n\n{table_diagnosis(first)}\n"
-    out += f"### Revisions possible ({len(answer_sets)} elements of Rev)\n\n{table_revisions(answer_sets)}\n"
+    out += f"### Possible revisions ({len(answer_sets)} elements of Rev)\n\n{table_revisions(answer_sets)}\n"
     out += f"### Evaluation (before revision)\n\n{table_evaluation(first)}\n"
 
 display(Markdown(out))

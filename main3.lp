@@ -1,10 +1,10 @@
-% RESCUE BOAT EXEMPLE
+% PROHIBITED RULE EXEMPLE
 
 
 % VOCABULARY
 context(mission;low_water;storm_front).
 act(hike;ford;call_heli;carry;secure_camp;use_boat).
-event(at_river;across;heli_here;evacuated;siren;sheltered;boat_here).
+event(at_river;across;heli_here;evacuated;siren;sheltered;boat_here;danger;mission_failed).
 
 step(0..1).
 rstep(0,1).                 
@@ -21,6 +21,9 @@ chead(c6,evacuated).   body(c6,carry). body(c6,across).
 chead(c7,evacuated).   body(c7,carry). body(c7,heli_here).
 chead(c8,boat_here). body(c8,use_boat).
 chead(c9,evacuated). body(c9,carry). body(c9,boat_here).
+chead(c10,danger).         body(c10,storm_front). nbody(c10,sheltered).
+chead(c11,mission_failed). body(c11,mission).  nbody(c11,evacuated).
+
 
 % DECISION THEORY
 choice(gw;gh;gf;ge;gs).
@@ -30,11 +33,11 @@ dhead(d2,gh).   body(d2,mission).
 dhead(d3,ge).   body(d3,across).
 dhead(d4,ge).   body(d4,heli_here).
 dhead(d5,gs).   body(d5,siren).
-dhead(d6,gf).   body(d6,low_water). body(d6,at_river).
+dhead(d6,gf).   nbody(d6,low_water). body(d6,at_river).
 
 offers(gw,hike).        cmin(gw,1). cmax(gw,1).
 offers(gh,call_heli). offers(gh,use_boat).   cmin(gh,0). cmax(gh,1).
-offers(gf,ford).        cmin(gf,0). cmax(gf,1).
+offers(gf,ford).        cmin(gf,0). cmax(gf,0).
 offers(ge,carry).       cmin(ge,1). cmax(ge,1).
 offers(gs,secure_camp). cmin(gs,1). cmax(gs,1).
 
@@ -47,8 +50,8 @@ believe(0,ag,mission).
 believe(0,ag,low_water).
 
 decision(0,hike).
-decision(0,ford).
-decision(0,carry).
+% decision(0,ford).
+% decision(0,carry).
 
 
 % CAUSAL LAYER
@@ -108,6 +111,7 @@ obs(pos,heli_here).
 
 %Absence witnesses
 unobsbody(R) :- body(R,X), not act(X), not obs(pos,X).
+unobsbody(R) :- nbody(R,X), not act(X), not obs(pos,X).
 obs_cond(S,G) :- missed(S,G), dhead(R,G), not fails(S,env,R), not unobsbody(R).
 wviol_det(S,G) :- wviol(S,G), obs_cond(S,G).
 missed_det(S,G) :- not wviol(S,G), obs_cond(S,G).
@@ -121,6 +125,8 @@ case(S,G,modelling_contradiction):- wviol(S,G), not wviol_det(S,G).
 %Mistaken anticipation witness
 %check if it can be detected
 neg_obs(S,R) :- body(R,X), obs(neg,X), not act(X), step(S), not satisfaction(S,env,X).
+neg_obs(S,R) :- nbody(R,X), obs(pos,X), not act(X), step(S), satisfaction(S,env,X).
+
 %detection
 bad(S,G)     :- incorrect(S,G), dhead(R,G), not fails(S,ag,R), not neg_obs(S,R).
 
@@ -146,8 +152,11 @@ tracked(X) :- event(X).
 %initial less than relationships
 %relation on delta
 lt0(X,E) :- chead(R,E), body(R,X), tracked(X).
+lt0(X,E) :- chead(R,E), nbody(R,X), tracked(X).
+
 %relation on pi
 lt0(X,A) :- dhead(R,G), body(R,X), tracked(X), offers(G,A).
+lt0(X,A) :- dhead(R,G), nbody(R,X), tracked(X), offers(G,A).
 
 eqv(X,Y) :- offers(G,X), offers(G,Y).
 eqv(X,Z) :- eqv(X,Y), eqv(Y,Z).
