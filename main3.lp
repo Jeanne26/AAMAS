@@ -94,8 +94,8 @@ wma(S,G) :- incorrect(S,G), offers(G,A), decision(S,A), not offered(S,env,A).
 witness(S,G) :- wviol(S,G).
 witness(S,G) :- wma(S,G).
 
-forced(G) :- cmin(G,M), M > 0.
-capped(G) :- cmax(G,M), M < #count{A:offers(G,A)}.
+constrained(G) :- cmin(G,M), M > 0.
+constrained(G) :- cmax(G,M), M < #count{A:offers(G,A)}.
 
 
 % OBSERVABLE FAILURE 
@@ -225,8 +225,7 @@ modelling_contradiction(S,G) :- wviol(S,G), not wviol_det(S,G).
 
 
 #show adm/2.
-#show forced/1.
-#show capped/1.
+#show constrained/1.
 #show contradicted/1.
 #show missed/2.
 #show incorrect/2.

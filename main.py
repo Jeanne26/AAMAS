@@ -78,8 +78,8 @@ def table_diagnosis(facts, step=0):
            f"{fmt([a[2] if a[1] == 'pos' else '¬' + str(a[2]) for a in get(facts, 'alert') if a[0] == step])}"
            f" ; past to preserve P = {fmt([a[1] for a in get(facts, 'preserved') if a[0] == step])}\n\n")
 
-    md += "| Choices | Missed | Incorrect | Witness | Forced | Capped | Case (Sec. 5.2) |\n"
-    md += "|:---:|:---:|:---:|:---:|:---:|:---:|:---|\n"
+    md += "| Choices | Missed | Incorrect | Witness | Constrained | Case |\n"
+    md += "|:---:|:---:|:---:|:---:|:---:|:---|\n"
     choices = sorted({a[1] for a in get(facts, "missed") if a[0] == step} |
                      {a[1] for a in get(facts, "incorrect") if a[0] == step})
     for g in choices:
@@ -88,8 +88,8 @@ def table_diagnosis(facts, step=0):
         wit = "viol" if flag(facts, "wviol", step, g) else ("ma" if flag(facts, "wma", step, g) else "—")
         cases = [a[2] for a in get(facts, "case") if a[0] == step and a[1] == g]
         md += (f"| {g} | {'✓' if miss else ''} | {'✓' if inc else ''} | {wit} "
-               f"| {'✓' if flag(facts, 'forced', g) else ''} "
-               f"| {'✓' if flag(facts, 'capped', g) else ''} | {', '.join(cases) or '—'} |\n")
+               f"| {'✓' if flag(facts, 'constrained', g) else ''} "
+               f"| {', '.join(cases) or '—'} |\n")
     return md
 
 

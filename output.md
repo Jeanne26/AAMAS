@@ -11,11 +11,11 @@
 - causes : {siren} (+), {¬across} (−)
 - alert = {siren, ¬across} ; past to preserve P = {ford, hike}
 
-| Choices | Missed | Incorrect | Witness | Forced | Capped | Case (Sec. 5.2) |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| ge |  | ✓ | ma | ✓ |  | ma_observable |
-| gf |  | ✓ | ma |  |  | ma_unobservable |
-| gs | ✓ |  | viol | ✓ |  | viol_observable |
+| Choices | Missed | Incorrect | Witness | Constrained | Case |
+|:---:|:---:|:---:|:---:|:---:|:---|
+| ge |  | ✓ | ma | ✓ | ma_observable |
+| gf |  | ✓ | ma |  | ma_unobservable |
+| gs | ✓ |  | viol | ✓ | viol_observable |
 
 ### Possible revisions (3 elements of Rev)
 
@@ -51,11 +51,11 @@
 - causes : {siren} (+), {¬across} (−)
 - alert = {siren, ¬across} ; past to preserve P = {ford, hike}
 
-| Choices | Missed | Incorrect | Witness | Forced | Capped | Case (Sec. 5.2) |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| ge |  | ✓ | ma | ✓ |  | ma_observable |
-| gf |  | ✓ | ma |  |  | ma_unobservable |
-| gs | ✓ |  | viol | ✓ |  | viol_observable |
+| Choices | Missed | Incorrect | Witness | Constrained | Case |
+|:---:|:---:|:---:|:---:|:---:|:---|
+| ge |  | ✓ | ma | ✓ | ma_observable |
+| gf |  | ✓ | ma |  | ma_unobservable |
+| gs | ✓ |  | viol | ✓ | viol_observable |
 
 ### Possible revisions (4 elements of Rev)
 
@@ -92,9 +92,9 @@
 - causes : {siren} (+), ∅ (−)
 - alert = {siren} ; past to preserve P = ∅
 
-| Choices | Missed | Incorrect | Witness | Forced | Capped | Case (Sec. 5.2) |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| gs | ✓ |  | viol | ✓ |  | viol_observable |
+| Choices | Missed | Incorrect | Witness | Constrained | Case |
+|:---:|:---:|:---:|:---:|:---:|:---|
+| gs | ✓ |  | viol | ✓ | viol_observable |
 
 ### Possible revisions (8 elements of Rev)
 
